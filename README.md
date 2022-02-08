@@ -1,24 +1,8 @@
 # Untangled Conditionals Kata
 
-[![Build Status](https://travis-ci.org/tomphp/untangled-conditionals-kata.svg?branch=master)](https://travis-ci.org/tomphp/untangled-conditionals-kata)
+Your task is to add a new feature - if there are no tests, fail the build as well as noting this in the log. Also, if sending email is enabled, warn that there are no tests in an email. Before you do that you will want to add some unit tests for the Pipeline class. If you prefer to start with the refactoring, go to the 'with_tests' branch.
 
-This repository contains a simple coding kata.
 
-Category: **refactoring** \
-Skill Level: **beginner** \
-Time: **~30 minutes**
+## Acknowledgements
 
-This repository contains the starting code.
-The logic is contained in a single method, `Pipeline.run()`.
-This method contains a number of embedded `if` statements.
-Your goal is to refactor the code to a more understandable and desirable state.
-
-Remember, keep the tests passing while you refactor!
-
-## Approach
-
-Below you can find some resources demonstrating the approach that this kata was designed to teach.
-However, I recommend you try the kata yourself first, and then review the resources.
-
-* Blog Post: [Refactoring — Untangling Conditionals](https://cloudnative.ly/refactoring-untangling-conditionals-cc5693b8ec3c).
-* Video: [![Untangled Conditionals Kata](https://img.youtube.com/vi/NWgY-0Qu4S4/0.jpg)](http://www.youtube.com/watch?v=NWgY-0Qu4S4)
+This exercise was originally named "Untangled Conditionals Kata" and was designed by [Tom Oram](https://github.com/tomphp). I wanted to use it as a test design kata as well as a refactoring kata, so I changed it a little bit.
