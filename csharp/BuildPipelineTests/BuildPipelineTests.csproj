@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\UntangledConditionals\UntangledConditionals.csproj" />
+      <ProjectReference Include="..\BuildPipeline\BuildPipeline.csproj" />
     </ItemGroup>
 
 </Project>

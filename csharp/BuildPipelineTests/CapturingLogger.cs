@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UntangledConditionals;
 
-namespace TestProject1
+namespace BuildPipelineTests
 {
     internal class CapturingLogger : Logger
     {
