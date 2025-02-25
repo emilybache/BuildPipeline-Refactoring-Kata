@@ -1,0 +1,12 @@
+{
+  "name": "build-pipeline-refactoring-kata",
+  "version": "0.1.0",
+  "readme": "README.md",
+  "protos": [ "Pipeline" ],
+  "dependencies": {
+    "libs": [],
+    "headers": [],
+    "protos": [],
+    "packages": []
+  }
+}
