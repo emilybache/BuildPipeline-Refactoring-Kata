@@ -31,7 +31,7 @@ PipelineTest := UnitTest clone do(
                 "INFO: Sending email"
         ), log getLoggedLines)
 
-        # verify(emailer) send("Deployment completed successfully")
+        Mock verify(emailer) send("Deployment completed successfully")
     )
 
     test_project_with_tests_that_deploys_successfully_without_email_notification := method(
@@ -50,7 +50,7 @@ PipelineTest := UnitTest clone do(
                 "INFO: Email disabled"
         ), log getLoggedLines)
 
-        # verify(emailer, never) send(any)
+        Mock verifyNever(emailer) send(any)
     )
 
     test_project_without_tests_that_deploys_successfully_with_email_notification := method(
@@ -69,7 +69,7 @@ PipelineTest := UnitTest clone do(
                 "INFO: Sending email"
         ), log getLoggedLines)
 
-        # verify(emailer) send("Deployment completed successfully")
+        Mock verify(emailer) send("Deployment completed successfully")
     )
 
     test_project_without_tests_that_deploys_successfully_without_email_notification := method(
@@ -88,7 +88,7 @@ PipelineTest := UnitTest clone do(
                 "INFO: Email disabled"
         ), log getLoggedLines)
 
-        # verify(emailer, never) send(any)
+        Mock verifyNever(emailer) send(any)
     )
 
     test_project_with_tests_that_fail_with_email_notification := method(
@@ -105,7 +105,7 @@ PipelineTest := UnitTest clone do(
                 "INFO: Sending email"
         ), log getLoggedLines)
 
-        # verify(emailer) send("Tests failed")
+        Mock verify(emailer) send("Tests failed")
     )
 
     test_project_with_tests_that_fail_without_email_notification := method(
@@ -122,7 +122,7 @@ PipelineTest := UnitTest clone do(
                 "INFO: Email disabled"
         ), log getLoggedLines)
 
-        # verify(emailer, never) send(any)
+        Mock verifyNever(emailer) send(any)
     )
 
     test_project_with_tests_and_failing_build_with_email_notification := method(
@@ -141,7 +141,7 @@ PipelineTest := UnitTest clone do(
                 "INFO: Sending email"
         ), log getLoggedLines)
 
-        # verify(emailer) send("Deployment failed")
+        Mock verify(emailer) send("Deployment failed")
     )
 
     test_project_with_tests_and_failing_build_without_email_notification := method(
@@ -160,7 +160,7 @@ PipelineTest := UnitTest clone do(
                 "INFO: Email disabled"
         ), log getLoggedLines)
 
-        # verify(emailer, never) send(any)
+        Mock verifyNever(emailer) send(any)
     )
 
     test_project_without_tests_and_failing_build_with_email_notification := method(
@@ -179,7 +179,7 @@ PipelineTest := UnitTest clone do(
                 "INFO: Sending email"
         ), log getLoggedLines)
 
-        # verify(emailer) send("Deployment failed")
+        Mock verify(emailer) send("Deployment failed")
     )
 
     test_project_without_tests_and_failing_build_without_email_notification := method(
@@ -198,6 +198,6 @@ PipelineTest := UnitTest clone do(
                 "INFO: Email disabled"
         ), log getLoggedLines)
 
-        # verify(emailer, never) send(any)
+        Mock verifyNever(emailer) send(any)
     )
 )

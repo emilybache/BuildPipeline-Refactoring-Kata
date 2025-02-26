@@ -32,7 +32,27 @@ MockTest := UnitTest clone do(
 
         emailer send("Deployment failed")
 
-        verify(emailer) send("Deployment failed")
+        Mock verify(emailer) send("Deployment failed")
+        assertRaisesException(
+            Mock verify(emailer) send("Missing")
+        )
+
+        // TODO bring method name into capture
+        // assertRaisesException(
+        //     Mock verify(emailer) other("Deployment failed")
+        // )
+    )
+
+    test_capture_verify_never := method(
+        self emailer := Emailer clone
+        Mock when(emailer send) capture
+        Mock verifyNever(emailer) send(whatever)
+
+        emailer send("Deployment failed")
+
+        assertRaisesException(
+            Mock verifyNever(emailer) send(whatever)
+        )
     )
 
 )
