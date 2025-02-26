@@ -15,15 +15,15 @@ Project := Object clone do(
     )
 
     hasTests := method(
-        self testStatus != TestStatus NO_TESTS
+        testStatus != TestStatus NO_TESTS
     )
 
     runTests := method(
-        testStatus == if (testStatus == TestStatus PASSING_TESTS, "success", "failure")
+        if (testStatus == TestStatus PASSING_TESTS, "success", "failure")
     )
 
     deploy := method(
-        if (self buildsSuccessfully, "success", "failure")
+        if (buildsSuccessfully, "success", "failure")
     )
 )
 
