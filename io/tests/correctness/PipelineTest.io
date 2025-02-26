@@ -4,47 +4,19 @@ doRelativeFile("../../io/Project.io")
 doRelativeFile("../../io/TestStatus.io")
 doRelativeFile("../../io/Pipeline.io")
 
-Mock := Object clone do(
-    when := method(
-        context := call sender // TODO
-        target := call argAt(0) name
-        methodName := call argAt(0) next name
-        with(context, target, methodName)
-    )
-
-    with := method(context, target, methodName,
-        result := self clone
-        result context := context
-        result target := target
-        result methodName := methodName
-        result
-    )
-
-    thenReturn := method(value,
-        context getSlot(target) updateSlot(methodName, value)
-    )
-)
-
 PipelineTest := UnitTest clone do(
-
-    when := method(
-        context := self
-        target := call argAt(0) name
-        methodName := call argAt(0) next name
-        Mock with(context, target, methodName)
-    )
 
     setUp := method(
         self config := Config clone
         self log := CapturingLogger clone
         self emailer := Emailer clone
-        when(emailer send) thenReturn("") // TODO later
+        Mock when(emailer send) thenReturn("") // TODO later
 
         self pipeline := Pipeline with(config, emailer, log)
     )
 
     test_project_with_tests_that_deploys_successfully_with_email_notification := method(
-        when(config sendEmailSummary) thenReturn(true)
+        Mock when(config sendEmailSummary) thenReturn(true)
 
         project := Project builder \
                  setTestStatus(TestStatus PASSING_TESTS) \
@@ -63,7 +35,7 @@ PipelineTest := UnitTest clone do(
     )
 
     test_project_with_tests_that_deploys_successfully_without_email_notification := method(
-        when(config sendEmailSummary) thenReturn(false)
+        Mock when(config sendEmailSummary) thenReturn(false)
 
         project := Project builder \
                  setTestStatus(TestStatus PASSING_TESTS) \
@@ -82,7 +54,7 @@ PipelineTest := UnitTest clone do(
     )
 
     test_project_without_tests_that_deploys_successfully_with_email_notification := method(
-        when(config sendEmailSummary) thenReturn(true)
+        Mock when(config sendEmailSummary) thenReturn(true)
 
         project := Project builder \
                  setTestStatus(TestStatus NO_TESTS) \
@@ -101,7 +73,7 @@ PipelineTest := UnitTest clone do(
     )
 
     test_project_without_tests_that_deploys_successfully_without_email_notification := method(
-        when(config sendEmailSummary) thenReturn(false)
+        Mock when(config sendEmailSummary) thenReturn(false)
 
         project := Project builder \
                  setTestStatus(TestStatus NO_TESTS) \
@@ -120,7 +92,7 @@ PipelineTest := UnitTest clone do(
     )
 
     test_project_with_tests_that_fail_with_email_notification := method(
-        when(config sendEmailSummary) thenReturn(true)
+        Mock when(config sendEmailSummary) thenReturn(true)
 
         project := Project builder \
                  setTestStatus(TestStatus FAILING_TESTS) \
@@ -137,7 +109,7 @@ PipelineTest := UnitTest clone do(
     )
 
     test_project_with_tests_that_fail_without_email_notification := method(
-        when(config sendEmailSummary) thenReturn(false)
+        Mock when(config sendEmailSummary) thenReturn(false)
 
         project := Project builder \
                  setTestStatus(TestStatus FAILING_TESTS) \
@@ -154,7 +126,7 @@ PipelineTest := UnitTest clone do(
     )
 
     test_project_with_tests_and_failing_build_with_email_notification := method(
-        when(config sendEmailSummary) thenReturn(true)
+        Mock when(config sendEmailSummary) thenReturn(true)
 
         project := Project builder \
                  setTestStatus(TestStatus PASSING_TESTS) \
@@ -173,7 +145,7 @@ PipelineTest := UnitTest clone do(
     )
 
     test_project_with_tests_and_failing_build_without_email_notification := method(
-        when(config sendEmailSummary) thenReturn(false)
+        Mock when(config sendEmailSummary) thenReturn(false)
 
         project := Project builder \
                  setTestStatus(TestStatus PASSING_TESTS) \
@@ -192,7 +164,7 @@ PipelineTest := UnitTest clone do(
     )
 
     test_project_without_tests_and_failing_build_with_email_notification := method(
-        when(config sendEmailSummary) thenReturn(true)
+        Mock when(config sendEmailSummary) thenReturn(true)
 
         project := Project builder \
                  setTestStatus(TestStatus NO_TESTS) \
@@ -211,7 +183,7 @@ PipelineTest := UnitTest clone do(
     )
 
     test_project_without_tests_and_failing_build_without_email_notification := method(
-        when(config sendEmailSummary) thenReturn(false)
+        Mock when(config sendEmailSummary) thenReturn(false)
 
         project := Project builder \
                  setTestStatus(TestStatus NO_TESTS) \
