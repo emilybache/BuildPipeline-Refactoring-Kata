@@ -1,33 +1,22 @@
 Mock := Object clone do(
 
     when := method(
-        context := Object clone prependProto(call sender)
-        targetName := call argAt(0) name
-        if (call sender hasLocalSlot(targetName)) then (
-            target := call sender getSlot(targetName)
-        ) elseif(call sender hasLocalSlot("self")) then  (
-            target := call sender self getSlot(targetName)
-        ) else (
-            target := nil // not found
-        )
+        target := _extractTarget(call)
         methodName := call argAt(0) next name
         MockSetup with(target, methodName)
     )
 
     verify := method(
-        context := Object clone prependProto(call sender)
-        targetName := call argAt(0) name
-        if (call sender hasLocalSlot(targetName)) then (
-            target := call sender getSlot(targetName)
-        ) elseif(call sender hasLocalSlot("self")) then  (
-            target := call sender self getSlot(targetName)
-        ) else (
-            target := nil // not found
-        )
+        target := _extractTarget(call)
         MockVerify with(target)
     )
 
     verifyNever := method(
+        target := _extractTarget(call)
+        MockVerifyNever with(target)
+    )
+
+    _extractTarget := method(call,
         context := Object clone prependProto(call sender)
         targetName := call argAt(0) name
         if (call sender hasLocalSlot(targetName)) then (
@@ -37,9 +26,8 @@ Mock := Object clone do(
         ) else (
             target := nil // not found
         )
-        MockVerifyNever with(target)
+        target
     )
-
 )
 
 MockSetup := Object clone do(
