@@ -21,8 +21,34 @@ Mock := Object clone do(
         result
     )
 
+    //doc Mock thenReturn set up a stubbed value for the given when
     thenReturn := method(value,
-        target updateSlot(methodName, value)
+        body := method(
+            value
+        )
+        target updateSlot(methodName, body)
+        self
     )
-    
+
+    //doc Mock capture set up recording of calls to given when
+    capture := method(
+        target captured_calls := list()
+        body := method(
+            captured_calls append(call evalArgs)
+            nil
+        )
+        target updateSlot(methodName, getSlot("body"))
+        self
+    )
+
+    captureAndReturn := method(value,
+        target captured_calls := list()
+        body := method(
+            captured_calls append(call evalArgs)
+            value
+        )
+        target updateSlot(methodName, getSlot("body"))
+        self
+    )
+
 )

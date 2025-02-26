@@ -10,7 +10,7 @@ PipelineTest := UnitTest clone do(
         self config := Config clone
         self log := CapturingLogger clone
         self emailer := Emailer clone
-        Mock when(emailer send) thenReturn("") // TODO later
+        Mock when(emailer send) capture
 
         self pipeline := Pipeline with(config, emailer, log)
     )
