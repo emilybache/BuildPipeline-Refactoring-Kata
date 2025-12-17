@@ -3,7 +3,7 @@ import dependencies.Emailer;
 import dependencies.Logger;
 import dependencies.Project;
 
-public record ReportStep(Config config, Logger log, Emailer emailer) implements PipelineStep {
+public record ReportStep(String name, Config config, Logger log, Emailer emailer) implements PipelineStep {
     @Override
     public PipelineStepResult run(Project project, PipelineStepResult stepResult) {
         if (config.sendEmailSummary()) {
@@ -16,6 +16,6 @@ public record ReportStep(Config config, Logger log, Emailer emailer) implements 
         } else {
             log.info("Email disabled");
         }
-        return new PipelineStepResult("Report", true, "");
+        return new PipelineStepResult(this.name(), true, stepResult.failureReason());
     }
 }

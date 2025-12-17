@@ -1,0 +1,7 @@
+
+INFO: Unit Tests passed
+INFO: Staging Deployment successful
+INFO: Smoke Tests passed
+INFO: Deployment successful
+INFO: Sending email
+Email message: Deployment completed successfully

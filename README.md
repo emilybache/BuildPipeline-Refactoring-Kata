@@ -3,6 +3,15 @@ Build Pipeline Refactoring Kata
 
 Your task is to add a new feature - a new step in the build pipeline. If the existing tests pass, deploy to a staging environment and run smoke tests. Only if they succeed do you proceed to deploy to production. If there are no smoke tests, fail the pipeline and email the message "Pipeline failed - no smoke tests". In other cases be sure to add suitable log messages and include in the email which tests or deployment failed if any. 
 
+A successful pipeline run log might look like this:
+
+	INFO: Unit Tests passed
+	INFO: Staging Deployment successful
+	INFO: Smoke Tests passed
+	INFO: Deployment successful
+	INFO: Sending email
+
+
 Before you make changes to the code you will want to add some tests for the existing functionality. If you prefer to start with the refactoring, go to the 'with_tests' branch.
 
 

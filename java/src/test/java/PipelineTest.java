@@ -22,9 +22,9 @@ class PipelineTest {
     @BeforeEach
     void setUp() {
         List<PipelineStep> pipelineSteps = List.of(
-                new TestStep(config, log),
-                new DeployStep(config, log),
-                new ReportStep(config, log, emailer)
+                new TestStep("Tests", config, log),
+                new DeployStep("Deployment", config, log),
+                new ReportStep("Report", config, log, emailer)
         );
         pipeline = new Pipeline(config, emailer, log, pipelineSteps);
     }
