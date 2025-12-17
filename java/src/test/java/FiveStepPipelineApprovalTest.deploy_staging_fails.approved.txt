@@ -1,0 +1,5 @@
+
+INFO: Unit Tests passed
+ERROR: Staging Deployment failed
+INFO: Sending email
+Email message: Staging Deployment failed

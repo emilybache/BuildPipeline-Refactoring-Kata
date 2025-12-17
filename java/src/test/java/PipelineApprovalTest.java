@@ -12,31 +12,6 @@ import java.util.List;
  */
 public class PipelineApprovalTest {
 
-    @Test
-    void five_step_pipeline_succeeds() {
-        var spy = new StringBuilder("\n");
-        var config = new DefaultConfig(true);
-        var emailer = new CapturingEmailer(spy);
-        var log = new CapturingLogger(spy);
-
-        List<PipelineStep> pipelineSteps = List.of(
-                new TestStep("Unit Tests", config, log),
-                new DeployStep("Staging Deployment", config, log),
-                new TestStep("Smoke Tests", config, log),
-                new DeployStep("Deployment", config, log),
-                new ReportStep("Report", config, log, emailer)
-        );
-        var pipeline = new Pipeline(config, emailer, log, pipelineSteps);
-
-        var project = Project.builder()
-                .setTestStatus(TestStatus.PASSING_TESTS)
-                .setDeploysSuccessfully(true)
-                .build();
-
-        pipeline.run(project);
-
-        Approvals.verify(spy);
-    }
 
     @Test
     void pipeline() {

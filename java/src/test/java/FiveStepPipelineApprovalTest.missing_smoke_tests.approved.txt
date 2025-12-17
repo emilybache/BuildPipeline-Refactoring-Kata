@@ -1,0 +1,6 @@
+
+INFO: Unit Tests passed
+INFO: Staging Deployment successful
+ERROR: Missing Smoke Tests
+INFO: Sending email
+Email message: Missing Smoke Tests
