@@ -1,0 +1,62 @@
+[PASSING_TESTS, true, true] => 
+INFO: Tests passed
+INFO: Deployment successful
+INFO: Sending email
+Email message: Deployment completed successfully
+ 
+[PASSING_TESTS, true, false] => 
+INFO: Tests passed
+ERROR: Deployment failed
+INFO: Sending email
+Email message: Deployment failed
+ 
+[PASSING_TESTS, false, true] => 
+INFO: Tests passed
+INFO: Deployment successful
+INFO: Email disabled
+ 
+[PASSING_TESTS, false, false] => 
+INFO: Tests passed
+ERROR: Deployment failed
+INFO: Email disabled
+ 
+[NO_TESTS, true, true] => 
+INFO: No tests
+INFO: Deployment successful
+INFO: Sending email
+Email message: Deployment completed successfully
+ 
+[NO_TESTS, true, false] => 
+INFO: No tests
+ERROR: Deployment failed
+INFO: Sending email
+Email message: Deployment failed
+ 
+[NO_TESTS, false, true] => 
+INFO: No tests
+INFO: Deployment successful
+INFO: Email disabled
+ 
+[NO_TESTS, false, false] => 
+INFO: No tests
+ERROR: Deployment failed
+INFO: Email disabled
+ 
+[FAILING_TESTS, true, true] => 
+ERROR: Tests failed
+INFO: Sending email
+Email message: Tests failed
+ 
+[FAILING_TESTS, true, false] => 
+ERROR: Tests failed
+INFO: Sending email
+Email message: Tests failed
+ 
+[FAILING_TESTS, false, true] => 
+ERROR: Tests failed
+INFO: Email disabled
+ 
+[FAILING_TESTS, false, false] => 
+ERROR: Tests failed
+INFO: Email disabled
+ 
