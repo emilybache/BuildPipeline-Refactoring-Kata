@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static dependencies.TestStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +21,12 @@ class PipelineTest {
 
     @BeforeEach
     void setUp() {
-        pipeline = new Pipeline(config, emailer, log);
+        List<PipelineStep> pipelineSteps = List.of(
+                new TestStep(config, log),
+                new DeployStep(config, log),
+                new ReportStep(config, log, emailer)
+        );
+        pipeline = new Pipeline(config, emailer, log, pipelineSteps);
     }
 
     @Test

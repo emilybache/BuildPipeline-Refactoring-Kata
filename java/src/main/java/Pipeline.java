@@ -4,6 +4,7 @@ import dependencies.Logger;
 import dependencies.Project;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Pipeline {
     private final Config config;
@@ -11,16 +12,17 @@ public class Pipeline {
     private final Logger log;
     private final List<PipelineStep> pipeline;
 
-    public Pipeline(Config config, Emailer emailer, Logger log) {
+    public Pipeline(Config config, Emailer emailer, Logger log, List<PipelineStep> pipelineSteps) {
         this.config = config;
         this.emailer = emailer;
         this.log = log;
-        this.pipeline = List.of(
+        this.pipeline = Objects.requireNonNullElseGet(pipelineSteps, () -> List.of(
                 new TestStep(config, log),
                 new DeployStep(config, log),
                 new ReportStep(config, log, emailer)
-        );
+        ));
     }
+
 
     public void run(Project project) {
         var previousStepResult = new PipelineStepResult("", true, "");

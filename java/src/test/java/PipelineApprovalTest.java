@@ -3,6 +3,8 @@ import dependencies.TestStatus;
 import org.approvaltests.combinations.CombinationApprovals;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 /**
  * This is a different style of test, an Approval test, to illustrate another way to do this.
  * The overall coverage should be similar to PipelineTest but with less code.
@@ -28,7 +30,13 @@ public class PipelineApprovalTest {
         var config = new DefaultConfig(sendSummary);
         var emailer = new CapturingEmailer(spy);
         var log = new CapturingLogger(spy);
-        var pipeline = new Pipeline(config, emailer, log);
+
+        List<PipelineStep> pipelineSteps = List.of(
+                new TestStep(config, log),
+                new DeployStep(config, log),
+                new ReportStep(config, log, emailer)
+        );
+        var pipeline = new Pipeline(config, emailer, log, pipelineSteps);
 
         var project = Project.builder()
                 .setTestStatus(testStatus)
