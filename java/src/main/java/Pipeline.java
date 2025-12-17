@@ -17,27 +17,38 @@ public class Pipeline {
     public void run(Project project) {
         boolean testsPassed;
         boolean deploySuccessful;
+        boolean previousStepPassed = false;
+        String failureReason = "";
 
         if (project.hasTests()) {
             if ("success".equals(project.runTests())) {
                 log.info("Tests passed");
                 testsPassed = true;
+                previousStepPassed = true;
             } else {
-                log.error("Tests failed");
+                String reason = "Tests failed";
+                log.error(reason);
                 testsPassed = false;
+                previousStepPassed = false;
+                failureReason = reason;
             }
         } else {
             log.info("No tests");
             testsPassed = true;
+            previousStepPassed = true;
         }
 
-        if (testsPassed) {
+        if (previousStepPassed) {
             if ("success".equals(project.deploy())) {
                 log.info("Deployment successful");
                 deploySuccessful = true;
+                previousStepPassed = true;
             } else {
-                log.error("Deployment failed");
+                String reason = "Deployment failed";
+                log.error(reason);
                 deploySuccessful = false;
+                previousStepPassed = false;
+                failureReason = reason;
             }
         } else {
             deploySuccessful = false;
@@ -45,15 +56,12 @@ public class Pipeline {
 
         if (config.sendEmailSummary()) {
             log.info("Sending email");
-            if (testsPassed) {
-                if (deploySuccessful) {
-                    emailer.send("Deployment completed successfully");
-                } else {
-                    emailer.send("Deployment failed");
-                }
-            } else {
-                emailer.send("Tests failed");
+            if (deploySuccessful) {
+                emailer.send("Deployment completed successfully");
             }
+
+            if (!previousStepPassed)
+                emailer.send(failureReason);
         } else {
             log.info("Email disabled");
         }
