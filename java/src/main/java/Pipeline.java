@@ -22,9 +22,10 @@ public class Pipeline {
         var testStep = new TestStep(config, log);
         var deployStep = new DeployStep(config, log);
         var reportStep = new ReportStep(config, log, emailer);
-        var testResult = testStep.doTestStep(project, emptyStepResult);
-        var deployResult = deployStep.doDeployStep(project, testResult);
-        var endResult = reportStep.doReportStep(project, deployResult);
+
+        var testResult = testStep.run(project, emptyStepResult);
+        var deployResult = deployStep.run(project, testResult);
+        var endResult = reportStep.run(project, deployResult);
     }
 
 }

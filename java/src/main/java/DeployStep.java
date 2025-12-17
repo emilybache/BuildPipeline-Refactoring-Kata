@@ -2,8 +2,8 @@ import dependencies.Config;
 import dependencies.Logger;
 import dependencies.Project;
 
-public record DeployStep(Config config, Logger log) {
-    PipelineStepResult doDeployStep(Project project, PipelineStepResult previousStepResult) {
+public record DeployStep(Config config, Logger log) implements PipelineStep {
+    public PipelineStepResult run(Project project, PipelineStepResult previousStepResult) {
         boolean stepPassed = false;
         String failureReason = previousStepResult.failureReason();
         if (previousStepResult.stepPassed()) {

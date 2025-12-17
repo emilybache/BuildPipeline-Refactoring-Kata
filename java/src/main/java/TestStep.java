@@ -2,8 +2,8 @@ import dependencies.Config;
 import dependencies.Logger;
 import dependencies.Project;
 
-public record TestStep(Config config, Logger log) {
-    PipelineStepResult doTestStep(Project project, PipelineStepResult previousStepResult) {
+public record TestStep(Config config, Logger log) implements  PipelineStep {
+    public PipelineStepResult run(Project project, PipelineStepResult previousStepResult) {
         boolean stepPassed;
         String failureReason = "";
         if (project.hasTests()) {
