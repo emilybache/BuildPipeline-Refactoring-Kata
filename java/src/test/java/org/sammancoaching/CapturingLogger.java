@@ -1,4 +1,6 @@
-import dependencies.Logger;
+package org.sammancoaching;
+
+import org.sammancoaching.dependencies.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
