@@ -1,4 +1,6 @@
-import dependencies.Config;
+package org.sammancoaching;
+
+import org.sammancoaching.dependencies.Config;
 
 public class DefaultConfig implements Config {
 

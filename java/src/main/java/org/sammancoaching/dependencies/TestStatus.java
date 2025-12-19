@@ -1,4 +1,4 @@
-package dependencies;
+package org.sammancoaching.dependencies;
 
 public enum TestStatus {
     NO_TESTS, //
