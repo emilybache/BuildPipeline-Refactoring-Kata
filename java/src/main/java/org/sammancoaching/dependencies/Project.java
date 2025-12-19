@@ -1,7 +1,7 @@
-package dependencies;
+package org.sammancoaching.dependencies;
 
-import static dependencies.TestStatus.NO_TESTS;
-import static dependencies.TestStatus.PASSING_TESTS;
+import static org.sammancoaching.dependencies.TestStatus.NO_TESTS;
+import static org.sammancoaching.dependencies.TestStatus.PASSING_TESTS;
 
 public class Project {
     private final boolean deploysSuccessfully;

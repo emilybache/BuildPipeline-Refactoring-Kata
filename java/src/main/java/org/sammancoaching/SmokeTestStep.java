@@ -1,6 +1,8 @@
-import dependencies.Config;
-import dependencies.Logger;
-import dependencies.Project;
+package org.sammancoaching;
+
+import org.sammancoaching.dependencies.Config;
+import org.sammancoaching.dependencies.Logger;
+import org.sammancoaching.dependencies.Project;
 
 public record SmokeTestStep(String name, Config config, Logger log) implements PipelineStep {
     @Override

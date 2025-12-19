@@ -1,7 +1,9 @@
-import dependencies.Config;
-import dependencies.Emailer;
-import dependencies.Logger;
-import dependencies.Project;
+package org.sammancoaching;
+
+import org.sammancoaching.dependencies.Config;
+import org.sammancoaching.dependencies.Emailer;
+import org.sammancoaching.dependencies.Logger;
+import org.sammancoaching.dependencies.Project;
 
 import java.util.List;
 import java.util.Objects;

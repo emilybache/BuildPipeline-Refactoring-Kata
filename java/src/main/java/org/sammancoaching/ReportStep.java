@@ -1,7 +1,9 @@
-import dependencies.Config;
-import dependencies.Emailer;
-import dependencies.Logger;
-import dependencies.Project;
+package org.sammancoaching;
+
+import org.sammancoaching.dependencies.Config;
+import org.sammancoaching.dependencies.Emailer;
+import org.sammancoaching.dependencies.Logger;
+import org.sammancoaching.dependencies.Project;
 
 public record ReportStep(String name, Config config, Logger log, Emailer emailer) implements PipelineStep {
     @Override

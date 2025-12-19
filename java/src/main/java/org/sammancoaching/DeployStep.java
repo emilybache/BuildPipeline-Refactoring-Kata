@@ -1,20 +1,21 @@
-import dependencies.Config;
-import dependencies.DeploymentEnvironment;
-import dependencies.Logger;
-import dependencies.Project;
+package org.sammancoaching;
 
-public record StagingDeployStep(String name, Config config, Logger log) implements PipelineStep {
-    @Override
+import org.sammancoaching.dependencies.Config;
+import org.sammancoaching.dependencies.Logger;
+import org.sammancoaching.dependencies.Project;
+
+public record DeployStep(String name, Config config, Logger log) implements PipelineStep {
     public PipelineStepResult run(Project project, PipelineStepResult previousStepResult) {
         boolean stepPassed = false;
         String failureReason = previousStepResult.failureReason();
         if (previousStepResult.stepPassed()) {
-            if ("success".equals(project.deploy(DeploymentEnvironment.STAGING))) {
+            if ("success".equals(project.deploy())) {
                 log.info(name() + " successful");
                 stepPassed = true;
             } else {
                 String reason = name() + " failed";
                 log.error(reason);
+                stepPassed = false;
                 failureReason = reason;
             }
         }

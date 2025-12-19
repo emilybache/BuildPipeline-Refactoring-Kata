@@ -1,6 +1,7 @@
-import dependencies.Project;
-import dependencies.TestStatus;
-import org.approvaltests.Approvals;
+package org.sammancoaching;
+
+import org.sammancoaching.dependencies.Project;
+import org.sammancoaching.dependencies.TestStatus;
 import org.approvaltests.combinations.CombinationApprovals;
 import org.junit.jupiter.api.Test;
 

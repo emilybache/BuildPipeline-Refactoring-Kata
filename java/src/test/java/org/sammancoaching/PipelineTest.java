@@ -1,16 +1,18 @@
-import dependencies.Config;
-import dependencies.Emailer;
-import dependencies.Project;
+package org.sammancoaching;
+
+import org.sammancoaching.dependencies.Config;
+import org.sammancoaching.dependencies.Emailer;
+import org.sammancoaching.dependencies.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static dependencies.TestStatus.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.sammancoaching.dependencies.TestStatus.*;
 
 class PipelineTest {
     private Config config = mock(Config.class);
