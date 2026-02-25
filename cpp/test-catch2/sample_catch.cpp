@@ -1,4 +1,5 @@
-#include "catch.hpp"
+#include "ApprovalTests.hpp"
+#include "catch2/catch.hpp"
 
 #include <vector>
 
@@ -125,3 +126,5 @@ TEST_CASE("Test with email disabled")
         }
     }
 }
+
+

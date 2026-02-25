@@ -1,25 +1,8 @@
-## Building
-To build the application run
-```shell script
-mkdir build
-cd build
-cmake ..
-make
-```
+BuildPipeline Refactoring Kata
+==============================
 
-## Running
-From the build directory, run
-```shell script
-./pipeline
-```
+For exercise instructions see [top level README](../README.md)
 
-## Expected results
-The expected results are
-```
-===============================================================================
-All tests passed (10 assertions in 2 test cases)
-```
+There is a test project here, using the popular test framework [Catch2](https://github.com/catchorg/Catch2) 
 
-## Doing the Kata
-The goal is to refactor the tangled conditional logic in the `run` method in the
-`Pipeline.cpp` file.
+
