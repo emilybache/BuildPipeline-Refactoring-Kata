@@ -1,24 +1,15 @@
-cmake_minimum_required(VERSION 3.8)
-project(pipeline)
+cmake_minimum_required(VERSION 3.25)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+set(CMAKE_VERBOSE_MAKEFILE ON)
+project(BuildPipeline-Refactoring-Kata VERSION 1.0
+        LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 
-if("${CMAKE_C_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang"
-    OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
-    message("Building with llvm code coverage")
-    set(CMAKE_CXX_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
-elseif(CMAKE_COMPILER_IS_GNUCXX)
-    message("Building with lcov code coverage")
-    set(CMAKE_CXX_FLAGS "--coverage")
-endif()
+# uncomment these lines to enable coverage measurements using gcov
+#set(CMAKE_CXX_FLAGS "--coverage")
 
-add_executable(pipeline
-        src/Pipeline.cpp
-        test/PipelineTest.cpp
-        test/main.cpp
-        )
-target_include_directories(pipeline PRIVATE include)
+enable_testing()
+add_subdirectory(src)
+add_subdirectory(test-catch2)
 
-include(CTest)
-
-add_test (pipeline pipeline )
