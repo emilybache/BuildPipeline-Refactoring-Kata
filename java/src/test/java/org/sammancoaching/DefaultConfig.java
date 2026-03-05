@@ -11,7 +11,7 @@ public class DefaultConfig implements Config {
     }
 
     @Override
-    public boolean sendEmailSummary() {
+    public boolean sendNotificationSummary() {
         return shouldSendSummary;
     }
 }

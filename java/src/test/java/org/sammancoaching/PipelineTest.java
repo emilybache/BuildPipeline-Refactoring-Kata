@@ -1,7 +1,7 @@
 package org.sammancoaching;
 
 import org.sammancoaching.dependencies.Config;
-import org.sammancoaching.dependencies.Emailer;
+import org.sammancoaching.dependencies.NotificationService;
 import org.sammancoaching.dependencies.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import static org.sammancoaching.dependencies.TestStatus.*;
 class PipelineTest {
     private Config config = mock(Config.class);
     private CapturingLogger log = new CapturingLogger();
-    private Emailer emailer = mock(Emailer.class);
+    private NotificationService emailer = mock(EmailService.class);
 
     private Pipeline pipeline;
 
@@ -27,7 +27,7 @@ class PipelineTest {
 
     @Test
     void project_with_tests_that_deploys_successfully_with_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(true);
+        when(config.sendNotificationSummary()).thenReturn(true);
 
         Project project = Project.builder() //
                 .setTestStatus(PASSING_TESTS) //
@@ -39,7 +39,7 @@ class PipelineTest {
         assertEquals(Arrays.asList( //
                 "INFO: Tests passed", //
                 "INFO: Deployment successful", //
-                "INFO: Sending email" //
+                "INFO: Sending notification" //
         ), log.getLoggedLines());
 
         verify(emailer).send("Deployment completed successfully");
@@ -47,7 +47,7 @@ class PipelineTest {
 
     @Test
     void project_with_tests_that_deploys_successfully_without_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(false);
+        when(config.sendNotificationSummary()).thenReturn(false);
 
         Project project = Project.builder() //
                 .setTestStatus(PASSING_TESTS) //
@@ -59,7 +59,7 @@ class PipelineTest {
         assertEquals(Arrays.asList( //
                 "INFO: Tests passed", //
                 "INFO: Deployment successful", //
-                "INFO: Email disabled" //
+                "INFO: Notification disabled" //
         ), log.getLoggedLines());
 
         verify(emailer, never()).send(any());
@@ -67,7 +67,7 @@ class PipelineTest {
 
     @Test
     void project_without_tests_that_deploys_successfully_with_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(true);
+        when(config.sendNotificationSummary()).thenReturn(true);
 
         Project project = Project.builder() //
                 .setTestStatus(NO_TESTS) //
@@ -79,7 +79,7 @@ class PipelineTest {
         assertEquals(Arrays.asList( //
                 "INFO: No tests", //
                 "INFO: Deployment successful", //
-                "INFO: Sending email" //
+                "INFO: Sending notification" //
         ), log.getLoggedLines());
 
         verify(emailer).send("Deployment completed successfully");
@@ -87,7 +87,7 @@ class PipelineTest {
 
     @Test
     void project_without_tests_that_deploys_successfully_without_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(false);
+        when(config.sendNotificationSummary()).thenReturn(false);
 
         Project project = Project.builder() //
                 .setTestStatus(NO_TESTS) //
@@ -99,7 +99,7 @@ class PipelineTest {
         assertEquals(Arrays.asList( //
                 "INFO: No tests", //
                 "INFO: Deployment successful", //
-                "INFO: Email disabled" //
+                "INFO: Notification disabled" //
         ), log.getLoggedLines());
 
         verify(emailer, never()).send(any());
@@ -107,7 +107,7 @@ class PipelineTest {
 
     @Test
     void project_with_tests_that_fail_with_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(true);
+        when(config.sendNotificationSummary()).thenReturn(true);
 
         Project project = Project.builder() //
                 .setTestStatus(FAILING_TESTS) //
@@ -117,7 +117,7 @@ class PipelineTest {
 
         assertEquals(Arrays.asList( //
                 "ERROR: Tests failed", //
-                "INFO: Sending email" //
+                "INFO: Sending notification" //
         ), log.getLoggedLines());
 
         verify(emailer).send("Tests failed");
@@ -125,7 +125,7 @@ class PipelineTest {
 
     @Test
     void project_with_tests_that_fail_without_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(false);
+        when(config.sendNotificationSummary()).thenReturn(false);
 
         Project project = Project.builder() //
                 .setTestStatus(FAILING_TESTS) //
@@ -135,7 +135,7 @@ class PipelineTest {
 
         assertEquals(Arrays.asList( //
                 "ERROR: Tests failed", //
-                "INFO: Email disabled" //
+                "INFO: Notification disabled" //
         ), log.getLoggedLines());
 
         verify(emailer, never()).send(any());
@@ -143,7 +143,7 @@ class PipelineTest {
 
     @Test
     void project_with_tests_and_failing_build_with_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(true);
+        when(config.sendNotificationSummary()).thenReturn(true);
 
         Project project = Project.builder() //
                 .setTestStatus(PASSING_TESTS) //
@@ -155,7 +155,7 @@ class PipelineTest {
         assertEquals(Arrays.asList( //
                 "INFO: Tests passed", //
                 "ERROR: Deployment failed", //
-                "INFO: Sending email" //
+                "INFO: Sending notification" //
         ), log.getLoggedLines());
 
         verify(emailer).send("Deployment failed");
@@ -163,7 +163,7 @@ class PipelineTest {
 
     @Test
     void project_with_tests_and_failing_build_without_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(false);
+        when(config.sendNotificationSummary()).thenReturn(false);
 
         Project project = Project.builder() //
                 .setTestStatus(PASSING_TESTS) //
@@ -175,7 +175,7 @@ class PipelineTest {
         assertEquals(Arrays.asList( //
                 "INFO: Tests passed", //
                 "ERROR: Deployment failed", //
-                "INFO: Email disabled" //
+                "INFO: Notification disabled" //
         ), log.getLoggedLines());
 
         verify(emailer, never()).send(any());
@@ -183,7 +183,7 @@ class PipelineTest {
 
     @Test
     void project_without_tests_and_failing_build_with_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(true);
+        when(config.sendNotificationSummary()).thenReturn(true);
 
         Project project = Project.builder() //
                 .setTestStatus(NO_TESTS) //
@@ -195,7 +195,7 @@ class PipelineTest {
         assertEquals(Arrays.asList( //
                 "INFO: No tests", //
                 "ERROR: Deployment failed", //
-                "INFO: Sending email" //
+                "INFO: Sending notification" //
         ), log.getLoggedLines());
 
         verify(emailer).send("Deployment failed");
@@ -203,7 +203,7 @@ class PipelineTest {
 
     @Test
     void project_without_tests_and_failing_build_without_email_notification() {
-        when(config.sendEmailSummary()).thenReturn(false);
+        when(config.sendNotificationSummary()).thenReturn(false);
 
         Project project = Project.builder() //
                 .setTestStatus(NO_TESTS) //
@@ -215,7 +215,7 @@ class PipelineTest {
         assertEquals(Arrays.asList( //
                 "INFO: No tests", //
                 "ERROR: Deployment failed", //
-                "INFO: Email disabled" //
+                "INFO: Notification disabled" //
         ), log.getLoggedLines());
 
         verify(emailer, never()).send(any());

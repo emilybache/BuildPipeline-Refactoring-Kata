@@ -1,18 +1,18 @@
 package org.sammancoaching;
 
 import org.sammancoaching.dependencies.Config;
-import org.sammancoaching.dependencies.Emailer;
+import org.sammancoaching.dependencies.NotificationService;
 import org.sammancoaching.dependencies.Logger;
 import org.sammancoaching.dependencies.Project;
 
 public class Pipeline {
     private final Config config;
-    private final Emailer emailer;
+    private final NotificationService notificationService;
     private final Logger log;
 
-    public Pipeline(Config config, Emailer emailer, Logger log) {
+    public Pipeline(Config config, NotificationService notificationService, Logger log) {
         this.config = config;
-        this.emailer = emailer;
+        this.notificationService = notificationService;
         this.log = log;
     }
 
@@ -52,23 +52,23 @@ public class Pipeline {
     }
 
     private void sendEmail(boolean testsPassed, boolean deploySuccessful) {
-        if (!config.sendEmailSummary()) {
-            log.info("Email disabled");
+        if (!config.sendNotificationSummary()) {
+            log.info("Notification disabled");
             return;
         }
 
-        log.info("Sending email");
+        log.info("Sending notification");
 
         if (!testsPassed) {
-            emailer.send("Tests failed");
+            notificationService.send("Tests failed");
             return;
         }
 
         if (deploySuccessful) {
-            emailer.send("Deployment completed successfully");
+            notificationService.send("Deployment completed successfully");
             return;
         }
 
-        emailer.send("Deployment failed");
+        notificationService.send("Deployment failed");
     }
 }

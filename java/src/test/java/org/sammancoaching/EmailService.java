@@ -1,11 +1,11 @@
 package org.sammancoaching;
 
-import org.sammancoaching.dependencies.Emailer;
+import org.sammancoaching.dependencies.NotificationService;
 
-public class CapturingEmailer implements Emailer {
+public class EmailService implements NotificationService {
     public final StringBuilder spy;
 
-    public CapturingEmailer(StringBuilder spy) {
+    public EmailService(StringBuilder spy) {
         this.spy = spy;
     }
 

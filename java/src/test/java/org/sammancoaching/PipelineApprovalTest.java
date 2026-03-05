@@ -28,7 +28,7 @@ public class PipelineApprovalTest {
     private String doPipelineRun(TestStatus testStatus, boolean sendSummary, boolean buildsSuccessfully) {
         var spy = new StringBuilder("\n");
         var config = new DefaultConfig(sendSummary);
-        var emailer = new CapturingEmailer(spy);
+        var emailer = new EmailService(spy);
         var log = new CapturingLogger(spy);
         var pipeline = new Pipeline(config, emailer, log);
 
