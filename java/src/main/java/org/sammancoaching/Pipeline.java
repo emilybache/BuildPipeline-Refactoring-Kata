@@ -23,18 +23,18 @@ public class Pipeline {
     }
 
     private boolean isTestsPassed(Project project) {
-        if (!project.hasTests()) {
-            log.info("No tests");
-            return true;
-        }
-
         if ("success".equals(project.runTests())) {
             log.info("Tests passed");
             return true;
         }
 
-        log.error("Tests failed");
-        return false;
+        if ("failure".equals(project.runTests())) {
+            log.error("Tests failed");
+            return false;
+        }
+
+        log.info("No tests");
+        return true;
     }
 
     private boolean isDeploySuccessful(Project project, boolean testsPassed) {

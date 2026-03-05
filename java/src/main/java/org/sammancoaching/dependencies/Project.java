@@ -1,7 +1,6 @@
 package org.sammancoaching.dependencies;
 
 import static org.sammancoaching.dependencies.TestStatus.NO_TESTS;
-import static org.sammancoaching.dependencies.TestStatus.PASSING_TESTS;
 
 public class Project {
     private final boolean deploysSuccessfully;
@@ -20,13 +19,7 @@ public class Project {
         this.smokeTestStatus = smokeTestStatus;
     }
 
-    public boolean hasTests() {
-        return testStatus != NO_TESTS;
-    }
-
-    public String runTests() {
-        return testStatus == PASSING_TESTS ? "success" : "failure";
-    }
+    public String runTests() { return testStatus.getStatus(); }
 
     public String deploy() {
         return deploy(DeploymentEnvironment.PRODUCTION);
