@@ -3,235 +3,234 @@ using Xunit;
 using Moq;
 using UntangledConditionals;
 
-namespace BuildPipelineTests
+namespace BuildPipelineTests;
+
+public class PipelineTest
 {
-    public class PipelineTest
+    private Pipeline pipeline;
+    private CapturingLogger log = new CapturingLogger();
+    private Mock<Config> _configMock;
+    private Mock<Emailer> _emailerMock;
+
+    public PipelineTest()
     {
-        private Pipeline pipeline;
-        private CapturingLogger log = new CapturingLogger();
-        private Mock<Config> _configMock;
-        private Mock<Emailer> _emailerMock;
+        _configMock = new Mock<Config>();
+        _emailerMock = new Mock<Emailer>();
+        pipeline = new Pipeline(_configMock.Object, _emailerMock.Object, log);
+    }
 
-        public PipelineTest()
+    [Fact]
+    void project_with_tests_that_deploys_successfully_with_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.PASSING_TESTS) //
+            .SetDeploysSuccessfully(true) //
+            .build();
+
+        pipeline.run(project);
+
+        Assert.Equal(new List<string>()
         {
-            _configMock = new Mock<Config>();
-            _emailerMock = new Mock<Emailer>();
-            pipeline = new Pipeline(_configMock.Object, _emailerMock.Object, log);
-        }
+            "INFO: Tests passed", //
+            "INFO: Deployment successful", //
+            "INFO: Sending email" //
+        }, log.Lines);
 
-        [Fact]
-        void project_with_tests_that_deploys_successfully_with_email_notification()
+        _emailerMock.Verify(m => m.send("Deployment completed successfully"));
+    }
+
+    [Fact]
+    void project_with_tests_that_deploys_successfully_without_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
+
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.PASSING_TESTS) //
+            .SetDeploysSuccessfully(true) //
+            .build();
+
+        pipeline.run(project);
+
+        Assert.Equal(new List<string>()
         {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+            "INFO: Tests passed", //
+            "INFO: Deployment successful", //
+            "INFO: Email disabled" //
+        }, log.Lines);
 
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.PASSING_TESTS) //
-                .SetDeploysSuccessfully(true) //
-                .build();
+        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
+    }
 
-            pipeline.run(project);
+    [Fact]
+    void project_without_tests_that_deploys_successfully_with_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
 
-            Assert.Equal(new List<string>()
-            {
-                "INFO: Tests passed", //
-                "INFO: Deployment successful", //
-                "INFO: Sending email" //
-            }, log.Lines);
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.NO_TESTS) //
+            .SetDeploysSuccessfully(true) //
+            .build();
 
-            _emailerMock.Verify(m => m.send("Deployment completed successfully"));
-        }
+        pipeline.run(project);
 
-        [Fact]
-        void project_with_tests_that_deploys_successfully_without_email_notification()
+        Assert.Equal(new List<string>()
         {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
+            "INFO: No tests", //
+            "INFO: Deployment successful", //
+            "INFO: Sending email" //
+        }, log.Lines);
 
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.PASSING_TESTS) //
-                .SetDeploysSuccessfully(true) //
-                .build();
+        _emailerMock.Verify(m => m.send("Deployment completed successfully"));
+    }
 
-            pipeline.run(project);
+    [Fact]
+    void project_without_tests_that_deploys_successfully_without_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
 
-            Assert.Equal(new List<string>()
-            {
-                "INFO: Tests passed", //
-                "INFO: Deployment successful", //
-                "INFO: Email disabled" //
-            }, log.Lines);
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.NO_TESTS) //
+            .SetDeploysSuccessfully(true) //
+            .build();
 
-            _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
-        }
+        pipeline.run(project);
 
-        [Fact]
-        void project_without_tests_that_deploys_successfully_with_email_notification()
+        Assert.Equal(new List<string>()
         {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+            "INFO: No tests", //
+            "INFO: Deployment successful", //
+            "INFO: Email disabled" //
+        }, log.Lines);
 
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.NO_TESTS) //
-                .SetDeploysSuccessfully(true) //
-                .build();
+        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
+    }
 
-            pipeline.run(project);
+    [Fact]
+    void project_with_tests_that_fail_with_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
 
-            Assert.Equal(new List<string>()
-            {
-                "INFO: No tests", //
-                "INFO: Deployment successful", //
-                "INFO: Sending email" //
-            }, log.Lines);
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.FAILING_TESTS) //
+            .build();
 
-            _emailerMock.Verify(m => m.send("Deployment completed successfully"));
-        }
+        pipeline.run(project);
 
-        [Fact]
-        void project_without_tests_that_deploys_successfully_without_email_notification()
+        Assert.Equal(new List<string>()
         {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
+            "ERROR: Tests failed", //
+            "INFO: Sending email" //
+        }, log.Lines);
 
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.NO_TESTS) //
-                .SetDeploysSuccessfully(true) //
-                .build();
+        _emailerMock.Verify(m => m.send("Tests failed"));
+    }
 
-            pipeline.run(project);
+    [Fact]
+    void project_with_tests_that_fail_without_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.FAILING_TESTS) //
+            .build();
 
-            Assert.Equal(new List<string>()
-            {
-                "INFO: No tests", //
-                "INFO: Deployment successful", //
-                "INFO: Email disabled" //
-            }, log.Lines);
+        pipeline.run(project);
 
-            _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        void project_with_tests_that_fail_with_email_notification()
+        Assert.Equal(new List<string>()
         {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+            "ERROR: Tests failed", //
+            "INFO: Email disabled" //
+        }, log.Lines);
 
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.FAILING_TESTS) //
-                .build();
+        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
+    }
 
-            pipeline.run(project);
+    [Fact]
+    void project_with_tests_and_failing_build_with_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
 
-            Assert.Equal(new List<string>()
-            {
-                "ERROR: Tests failed", //
-                "INFO: Sending email" //
-            }, log.Lines);
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.PASSING_TESTS) //
+            .SetDeploysSuccessfully(false) //
+            .build();
 
-            _emailerMock.Verify(m => m.send("Tests failed"));
-        }
+        pipeline.run(project);
 
-        [Fact]
-        void project_with_tests_that_fail_without_email_notification()
+        Assert.Equal(new List<string>()
         {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.FAILING_TESTS) //
-                .build();
+            "INFO: Tests passed", //
+            "ERROR: Deployment failed", //
+            "INFO: Sending email" //
+        }, log.Lines);
 
-            pipeline.run(project);
+        _emailerMock.Verify(m => m.send("Deployment failed"));
+    }
 
-            Assert.Equal(new List<string>()
-            {
-                "ERROR: Tests failed", //
-                "INFO: Email disabled" //
-            }, log.Lines);
+    [Fact]
+    void project_with_tests_and_failing_build_without_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
 
-            _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
-        }
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.PASSING_TESTS) //
+            .SetDeploysSuccessfully(false) //
+            .build();
 
-        [Fact]
-        void project_with_tests_and_failing_build_with_email_notification()
+        pipeline.run(project);
+
+        Assert.Equal(new List<string>()
         {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+            "INFO: Tests passed", //
+            "ERROR: Deployment failed", //
+            "INFO: Email disabled" //
+        }, log.Lines);
 
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.PASSING_TESTS) //
-                .SetDeploysSuccessfully(false) //
-                .build();
+        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
+    }
 
-            pipeline.run(project);
+    [Fact]
+    void project_without_tests_and_failing_build_with_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
 
-            Assert.Equal(new List<string>()
-            {
-                "INFO: Tests passed", //
-                "ERROR: Deployment failed", //
-                "INFO: Sending email" //
-            }, log.Lines);
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.NO_TESTS) //
+            .SetDeploysSuccessfully(false) //
+            .build();
 
-            _emailerMock.Verify(m => m.send("Deployment failed"));
-        }
+        pipeline.run(project);
 
-        [Fact]
-        void project_with_tests_and_failing_build_without_email_notification()
+        Assert.Equal(new List<string>()
         {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
+            "INFO: No tests", //
+            "ERROR: Deployment failed", //
+            "INFO: Sending email" //
+        }, log.Lines);
 
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.PASSING_TESTS) //
-                .SetDeploysSuccessfully(false) //
-                .build();
+        _emailerMock.Verify(m => m.send("Deployment failed"));
+    }
 
-            pipeline.run(project);
+    [Fact]
+    void project_without_tests_and_failing_build_without_email_notification()
+    {
+        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
 
-            Assert.Equal(new List<string>()
-            {
-                "INFO: Tests passed", //
-                "ERROR: Deployment failed", //
-                "INFO: Email disabled" //
-            }, log.Lines);
+        Project project = Project.builder() //
+            .SetTestStatus(TestStatus.NO_TESTS) //
+            .SetDeploysSuccessfully(false) //
+            .build();
 
-            _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
-        }
+        pipeline.run(project);
 
-        [Fact]
-        void project_without_tests_and_failing_build_with_email_notification()
+        Assert.Equal(new List<string>()
         {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+            "INFO: No tests", //
+            "ERROR: Deployment failed", //
+            "INFO: Email disabled" //
+        }, log.Lines);
 
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.NO_TESTS) //
-                .SetDeploysSuccessfully(false) //
-                .build();
-
-            pipeline.run(project);
-
-            Assert.Equal(new List<string>()
-            {
-                "INFO: No tests", //
-                "ERROR: Deployment failed", //
-                "INFO: Sending email" //
-            }, log.Lines);
-
-            _emailerMock.Verify(m => m.send("Deployment failed"));
-        }
-
-        [Fact]
-        void project_without_tests_and_failing_build_without_email_notification()
-        {
-            _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
-
-            Project project = Project.builder() //
-                .SetTestStatus(TestStatus.NO_TESTS) //
-                .SetDeploysSuccessfully(false) //
-                .build();
-
-            pipeline.run(project);
-
-            Assert.Equal(new List<string>()
-            {
-                "INFO: No tests", //
-                "ERROR: Deployment failed", //
-                "INFO: Email disabled" //
-            }, log.Lines);
-
-            _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
-        }
+        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
     }
 }
