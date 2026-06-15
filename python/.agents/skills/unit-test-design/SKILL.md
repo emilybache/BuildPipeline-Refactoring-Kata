@@ -1,5 +1,5 @@
 ---
-name: unit-test-design
+name: unit-tests-design
 description: Guide for designing unit tests
 ---
 

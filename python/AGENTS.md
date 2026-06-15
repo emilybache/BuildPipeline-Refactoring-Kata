@@ -6,7 +6,6 @@
 
 For agents working on this project:
 
-1. Create a virtual environment
-2. Activate it
+1. Create a virtual environment or Activate one that is already here.
 3. Install dependencies: `pip install -e .`
 4. Run tests: `pytest`
