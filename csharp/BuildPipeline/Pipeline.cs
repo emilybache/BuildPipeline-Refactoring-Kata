@@ -4,77 +4,77 @@ namespace UntangledConditionals
 {
     public class Pipeline
     {
-        private readonly Config _config;
-        private readonly Emailer _emailer;
-        private readonly Logger _log;
+        private readonly IConfig _config;
+        private readonly IEmailer _emailer;
+        private readonly ILogger _log;
 
 
-        public Pipeline(Config config, Emailer emailer, Logger log)
+        public Pipeline(IConfig config, IEmailer emailer, ILogger log)
         {
             _config = config;
             _emailer = emailer;
             _log = log;
         }
         
-        public void run(Project project) {
+        public void Run(Project project) {
             bool testsPassed;
             bool deploySuccessful;
 
-            if (project.hasTests()) {
-                if ("success".Equals(project.runTests())) {
-                    _log.info("Tests passed");
+            if (project.HasTests()) {
+                if ("success".Equals(project.RunTests())) {
+                    _log.Info("Tests passed");
                     testsPassed = true;
                 } else {
-                    _log.error("Tests failed");
+                    _log.Error("Tests failed");
                     testsPassed = false;
                 }
             } else {
-                _log.info("No tests");
+                _log.Info("No tests");
                 testsPassed = true;
             }
 
             if (testsPassed) {
-                if ("success".Equals(project.deploy())) {
-                    _log.info("Deployment successful");
+                if ("success".Equals(project.Deploy())) {
+                    _log.Info("Deployment successful");
                     deploySuccessful = true;
                 } else {
-                    _log.error("Deployment failed");
+                    _log.Error("Deployment failed");
                     deploySuccessful = false;
                 }
             } else {
                 deploySuccessful = false;
             }
 
-            if (_config.sendEmailSummary()) {
-                _log.info("Sending email");
+            if (_config.SendEmailSummary()) {
+                _log.Info("Sending email");
                 if (testsPassed) {
                     if (deploySuccessful) {
-                        _emailer.send("Deployment completed successfully");
+                        _emailer.Send("Deployment completed successfully");
                     } else {
-                        _emailer.send("Deployment failed");
+                        _emailer.Send("Deployment failed");
                     }
                 } else {
-                    _emailer.send("Tests failed");
+                    _emailer.Send("Tests failed");
                 }
             } else {
-                _log.info("Email disabled");
+                _log.Info("Email disabled");
             }
         }
     }
 
-    public interface Logger
+    public interface ILogger
     {
-        void info(string message);
-        void error(string message);
+        void Info(string message);
+        void Error(string message);
     }
 
-    public interface Emailer
+    public interface IEmailer
     {
-        void send(string message);
+        void Send(string message);
     }
 
-    public interface Config
+    public interface IConfig
     {
-        bool sendEmailSummary();
+        bool SendEmailSummary();
     }
 }
