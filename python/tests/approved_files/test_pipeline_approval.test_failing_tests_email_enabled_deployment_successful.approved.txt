@@ -1,0 +1,3 @@
+ERROR: Tests failed
+INFO: Sending email
+Email message: Tests failed
