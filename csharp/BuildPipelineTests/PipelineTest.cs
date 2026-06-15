@@ -7,8 +7,8 @@ namespace BuildPipelineTests;
 
 public class PipelineTest
 {
-    private Pipeline pipeline;
-    private CapturingLogger log = new CapturingLogger();
+    private Pipeline _pipeline;
+    private CapturingLogger _log = new CapturingLogger();
     private Mock<Config> _configMock;
     private Mock<Emailer> _emailerMock;
 
@@ -16,221 +16,221 @@ public class PipelineTest
     {
         _configMock = new Mock<Config>();
         _emailerMock = new Mock<Emailer>();
-        pipeline = new Pipeline(_configMock.Object, _emailerMock.Object, log);
+        _pipeline = new Pipeline(_configMock.Object, _emailerMock.Object, _log);
     }
 
     [Fact]
     void project_with_tests_that_deploys_successfully_with_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(true);
 
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.PASSING_TESTS) //
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.PassingTests) //
             .SetDeploysSuccessfully(true) //
-            .build();
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "INFO: Tests passed", //
             "INFO: Deployment successful", //
             "INFO: Sending email" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send("Deployment completed successfully"));
+        _emailerMock.Verify(m => m.Send("Deployment completed successfully"));
     }
 
     [Fact]
     void project_with_tests_that_deploys_successfully_without_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(false);
 
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.PASSING_TESTS) //
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.PassingTests) //
             .SetDeploysSuccessfully(true) //
-            .build();
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "INFO: Tests passed", //
             "INFO: Deployment successful", //
             "INFO: Email disabled" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
+        _emailerMock.Verify(m => m.Send(It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
     void project_without_tests_that_deploys_successfully_with_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(true);
 
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.NO_TESTS) //
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.NoTests) //
             .SetDeploysSuccessfully(true) //
-            .build();
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "INFO: No tests", //
             "INFO: Deployment successful", //
             "INFO: Sending email" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send("Deployment completed successfully"));
+        _emailerMock.Verify(m => m.Send("Deployment completed successfully"));
     }
 
     [Fact]
     void project_without_tests_that_deploys_successfully_without_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(false);
 
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.NO_TESTS) //
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.NoTests) //
             .SetDeploysSuccessfully(true) //
-            .build();
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "INFO: No tests", //
             "INFO: Deployment successful", //
             "INFO: Email disabled" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
+        _emailerMock.Verify(m => m.Send(It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
     void project_with_tests_that_fail_with_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(true);
 
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.FAILING_TESTS) //
-            .build();
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.FailingTests) //
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "ERROR: Tests failed", //
             "INFO: Sending email" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send("Tests failed"));
+        _emailerMock.Verify(m => m.Send("Tests failed"));
     }
 
     [Fact]
     void project_with_tests_that_fail_without_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.FAILING_TESTS) //
-            .build();
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(false);
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.FailingTests) //
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "ERROR: Tests failed", //
             "INFO: Email disabled" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
+        _emailerMock.Verify(m => m.Send(It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
     void project_with_tests_and_failing_build_with_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(true);
 
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.PASSING_TESTS) //
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.PassingTests) //
             .SetDeploysSuccessfully(false) //
-            .build();
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "INFO: Tests passed", //
             "ERROR: Deployment failed", //
             "INFO: Sending email" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send("Deployment failed"));
+        _emailerMock.Verify(m => m.Send("Deployment failed"));
     }
 
     [Fact]
     void project_with_tests_and_failing_build_without_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(false);
 
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.PASSING_TESTS) //
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.PassingTests) //
             .SetDeploysSuccessfully(false) //
-            .build();
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "INFO: Tests passed", //
             "ERROR: Deployment failed", //
             "INFO: Email disabled" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
+        _emailerMock.Verify(m => m.Send(It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
     void project_without_tests_and_failing_build_with_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(true);
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(true);
 
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.NO_TESTS) //
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.NoTests) //
             .SetDeploysSuccessfully(false) //
-            .build();
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "INFO: No tests", //
             "ERROR: Deployment failed", //
             "INFO: Sending email" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send("Deployment failed"));
+        _emailerMock.Verify(m => m.Send("Deployment failed"));
     }
 
     [Fact]
     void project_without_tests_and_failing_build_without_email_notification()
     {
-        _configMock.Setup(c => c.sendEmailSummary()).Returns(false);
+        _configMock.Setup(c => c.SendEmailSummary()).Returns(false);
 
-        Project project = Project.builder() //
-            .SetTestStatus(TestStatus.NO_TESTS) //
+        Project project = Project.Builder() //
+            .SetTestStatus(TestStatus.NoTests) //
             .SetDeploysSuccessfully(false) //
-            .build();
+            .Build();
 
-        pipeline.run(project);
+        _pipeline.Run(project);
 
         Assert.Equal(new List<string>()
         {
             "INFO: No tests", //
             "ERROR: Deployment failed", //
             "INFO: Email disabled" //
-        }, log.Lines);
+        }, _log.Lines);
 
-        _emailerMock.Verify(m => m.send(It.IsAny<string>()), Times.Never);
+        _emailerMock.Verify(m => m.Send(It.IsAny<string>()), Times.Never);
     }
 }

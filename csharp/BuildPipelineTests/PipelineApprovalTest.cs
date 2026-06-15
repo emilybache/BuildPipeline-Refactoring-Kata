@@ -15,42 +15,42 @@ public class PipelineApprovalTest
     [Fact]
     public async Task PassingTests_EmailEnabled_DeploymentSuccessful()
     {
-        var output = DoPipelineRun(TestStatus.PASSING_TESTS, true, true);
+        var output = DoPipelineRun(TestStatus.PassingTests, true, true);
         await Verifier.Verify(output);
     }
 
     [Fact]
     public async Task PassingTests_EmailEnabled_DeploymentFailed()
     {
-        var output = DoPipelineRun(TestStatus.PASSING_TESTS, true, false);
+        var output = DoPipelineRun(TestStatus.PassingTests, true, false);
         await Verifier.Verify(output);
     }
 
     [Fact]
     public async Task PassingTests_EmailDisabled_DeploymentSuccessful()
     {
-        var output = DoPipelineRun(TestStatus.PASSING_TESTS, false, true);
+        var output = DoPipelineRun(TestStatus.PassingTests, false, true);
         await Verifier.Verify(output);
     }
 
     [Fact]
     public async Task NoTests_EmailEnabled_DeploymentSuccessful()
     {
-        var output = DoPipelineRun(TestStatus.NO_TESTS, true, true);
+        var output = DoPipelineRun(TestStatus.NoTests, true, true);
         await Verifier.Verify(output);
     }
 
     [Fact]
     public async Task NoTests_EmailEnabled_DeploymentFailed()
     {
-        var output = DoPipelineRun(TestStatus.NO_TESTS, true, false);
+        var output = DoPipelineRun(TestStatus.NoTests, true, false);
         await Verifier.Verify(output);
     }
 
     [Fact]
     public async Task FailingTests_EmailEnabled_DeploymentSuccessful()
     {
-        var output = DoPipelineRun(TestStatus.FAILING_TESTS, true, true);
+        var output = DoPipelineRun(TestStatus.FailingTests, true, true);
         await Verifier.Verify(output);
     }
 
@@ -62,12 +62,12 @@ public class PipelineApprovalTest
         var log = new SpyLogger(spy);
         var pipeline = new Pipeline(config, emailer, log);
 
-        var project = Project.builder()
+        var project = Project.Builder()
             .SetTestStatus(testStatus)
             .SetDeploysSuccessfully(buildsSuccessfully)
-            .build();
+            .Build();
 
-        pipeline.run(project);
+        pipeline.Run(project);
         return spy.ToString();
     }
 
@@ -75,14 +75,14 @@ public class PipelineApprovalTest
     {
         private readonly bool _sendEmail;
         public DefaultConfig(bool sendEmail) => _sendEmail = sendEmail;
-        public bool sendEmailSummary() => _sendEmail;
+        public bool SendEmailSummary() => _sendEmail;
     }
 
     private class SpyEmailer : Emailer
     {
         private readonly StringBuilder _spy;
         public SpyEmailer(StringBuilder spy) => _spy = spy;
-        public void send(string message)
+        public void Send(string message)
         {
             _spy.AppendLine($"Email message: {message}");
         }
@@ -93,12 +93,12 @@ public class PipelineApprovalTest
         private readonly StringBuilder _spy;
         public SpyLogger(StringBuilder spy) => _spy = spy;
 
-        public void info(string message)
+        public void Info(string message)
         {
             _spy.AppendLine($"INFO: {message}");
         }
 
-        public void error(string message)
+        public void Error(string message)
         {
             _spy.AppendLine($"ERROR: {message}");
         }

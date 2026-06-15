@@ -3,41 +3,41 @@ using System;
 namespace UntangledConditionals
 {
     public enum TestStatus {
-        NO_TESTS, //
-        PASSING_TESTS, //
-        FAILING_TESTS
+        NoTests, //
+        PassingTests, //
+        FailingTests
     }
     public class Project
     {
-        private bool buildsSuccessfully;
-        private TestStatus testStatus;
+        private bool _buildsSuccessfully;
+        private TestStatus _testStatus;
 
-        public static ProjectBuilder builder() {
+        public static ProjectBuilder Builder() {
             return new ProjectBuilder();
         }
 
         private Project(bool buildsSuccessfully, TestStatus testStatus) {
-            this.buildsSuccessfully = buildsSuccessfully;
-            this.testStatus = testStatus;
+            this._buildsSuccessfully = buildsSuccessfully;
+            this._testStatus = testStatus;
         }
 
-        public bool hasTests() {
-            return testStatus != TestStatus.NO_TESTS;
+        public bool HasTests() {
+            return _testStatus != TestStatus.NoTests;
         }
 
-        public String runTests() {
-            return testStatus == TestStatus.PASSING_TESTS ? "success" : "failure";
+        public string RunTests() {
+            return _testStatus == TestStatus.PassingTests ? "success" : "failure";
         }
 
-        public String deploy() {
-            return buildsSuccessfully ? "success" : "failure";
+        public string Deploy() {
+            return _buildsSuccessfully ? "success" : "failure";
         }
 
         public class ProjectBuilder {
             public bool BuildsSuccessfully { get; set; }
             public TestStatus TestStatus { get; set; }
 
-            public Project build() {
+            public Project Build() {
                 return new Project(BuildsSuccessfully, TestStatus);
             }
 
