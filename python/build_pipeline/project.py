@@ -1,4 +1,4 @@
-from status import NO_TESTS, PASSING_TESTS
+from .status import NO_TESTS, PASSING_TESTS
 
 
 class Project:
