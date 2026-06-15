@@ -13,27 +13,45 @@ namespace BuildPipelineTests;
 public class PipelineApprovalTest
 {
     [Fact]
-    public async Task Pipeline()
+    public async Task PassingTests_EmailEnabled_DeploymentSuccessful()
     {
-        var testStatuses = new[] { TestStatus.PASSING_TESTS, TestStatus.NO_TESTS, TestStatus.FAILING_TESTS };
-        var sendSummaries = new[] { true, false };
-        var buildsSuccessfullies = new[] { true, false };
+        var output = DoPipelineRun(TestStatus.PASSING_TESTS, true, true);
+        await Verifier.Verify(output);
+    }
 
-        var results = new StringBuilder();
+    [Fact]
+    public async Task PassingTests_EmailEnabled_DeploymentFailed()
+    {
+        var output = DoPipelineRun(TestStatus.PASSING_TESTS, true, false);
+        await Verifier.Verify(output);
+    }
 
-        foreach (var testStatus in testStatuses)
-        {
-            foreach (var sendSummary in sendSummaries)
-            {
-                foreach (var buildsSuccessfully in buildsSuccessfullies)
-                {
-                    var output = DoPipelineRun(testStatus, sendSummary, buildsSuccessfully);
-                    results.AppendLine($"[{testStatus}, {sendSummary.ToString().ToLower()}, {buildsSuccessfully.ToString().ToLower()}] => {output}");
-                }
-            }
-        }
+    [Fact]
+    public async Task PassingTests_EmailDisabled_DeploymentSuccessful()
+    {
+        var output = DoPipelineRun(TestStatus.PASSING_TESTS, false, true);
+        await Verifier.Verify(output);
+    }
 
-        await Verifier.Verify(results.ToString());
+    [Fact]
+    public async Task NoTests_EmailEnabled_DeploymentSuccessful()
+    {
+        var output = DoPipelineRun(TestStatus.NO_TESTS, true, true);
+        await Verifier.Verify(output);
+    }
+
+    [Fact]
+    public async Task NoTests_EmailEnabled_DeploymentFailed()
+    {
+        var output = DoPipelineRun(TestStatus.NO_TESTS, true, false);
+        await Verifier.Verify(output);
+    }
+
+    [Fact]
+    public async Task FailingTests_EmailEnabled_DeploymentSuccessful()
+    {
+        var output = DoPipelineRun(TestStatus.FAILING_TESTS, true, true);
+        await Verifier.Verify(output);
     }
 
     private string DoPipelineRun(TestStatus testStatus, bool sendSummary, bool buildsSuccessfully)

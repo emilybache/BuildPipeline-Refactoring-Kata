@@ -1,0 +1,4 @@
+﻿INFO: No tests
+ERROR: Deployment failed
+INFO: Sending email
+Email message: Deployment failed
