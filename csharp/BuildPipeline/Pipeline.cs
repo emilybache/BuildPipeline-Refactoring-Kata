@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace UntangledConditionals
 {
@@ -7,74 +8,49 @@ namespace UntangledConditionals
         private readonly Config _config;
         private readonly Emailer _emailer;
         private readonly Logger _log;
+        private readonly List<PipelineStep> _pipeline;
 
+        public Pipeline(Config config, Emailer emailer, Logger log) 
+            : this(config, emailer, log, null)
+        {
+        }
 
-        public Pipeline(Config config, Emailer emailer, Logger log)
+        public Pipeline(Config config, Emailer emailer, Logger log, List<PipelineStep> pipelineSteps)
         {
             _config = config;
             _emailer = emailer;
             _log = log;
+            _pipeline = pipelineSteps ?? new List<PipelineStep>
+            {
+                new TestStep("Tests", config, log),
+                new DeployStep("Deployment", config, log),
+                new ReportStep("Report", config, log, emailer)
+            };
         }
-        
-        public void run(Project project) {
-            bool testsPassed;
-            bool deploySuccessful;
 
-            if (project.hasTests()) {
-                if ("success".Equals(project.runTests())) {
-                    _log.info("Tests passed");
-                    testsPassed = true;
-                } else {
-                    _log.error("Tests failed");
-                    testsPassed = false;
-                }
-            } else {
-                _log.info("No tests");
-                testsPassed = true;
-            }
-
-            if (testsPassed) {
-                if ("success".Equals(project.deploy())) {
-                    _log.info("Deployment successful");
-                    deploySuccessful = true;
-                } else {
-                    _log.error("Deployment failed");
-                    deploySuccessful = false;
-                }
-            } else {
-                deploySuccessful = false;
-            }
-
-            if (_config.sendEmailSummary()) {
-                _log.info("Sending email");
-                if (testsPassed) {
-                    if (deploySuccessful) {
-                        _emailer.send("Deployment completed successfully");
-                    } else {
-                        _emailer.send("Deployment failed");
-                    }
-                } else {
-                    _emailer.send("Tests failed");
-                }
-            } else {
-                _log.info("Email disabled");
+        public void Run(Project project)
+        {
+            var previousStepResult = new PipelineStepResult("", true, "");
+            foreach (var step in _pipeline)
+            {
+                previousStepResult = step.Run(project, previousStepResult);
             }
         }
     }
 
     public interface Logger
     {
-        void info(string message);
-        void error(string message);
+        void Info(string message);
+        void Error(string message);
     }
 
     public interface Emailer
     {
-        void send(string message);
+        void Send(string message);
     }
 
     public interface Config
     {
-        bool sendEmailSummary();
+        bool SendEmailSummary();
     }
 }

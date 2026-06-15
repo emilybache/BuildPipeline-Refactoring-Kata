@@ -3,54 +3,84 @@ using System;
 namespace UntangledConditionals
 {
     public enum TestStatus {
-        NO_TESTS, //
-        PASSING_TESTS, //
-        FAILING_TESTS
+        NoTests, //
+        PassingTests, //
+        FailingTests
     }
+    
     public class Project
     {
-        private bool buildsSuccessfully;
-        private TestStatus testStatus;
+        private readonly bool _deploysSuccessfully;
+        private readonly TestStatus _testStatus;
+        private readonly bool _deploysSuccessfullyToStaging;
+        private readonly TestStatus _smokeTestStatus;
 
-        public static ProjectBuilder builder() {
+        public static ProjectBuilder Builder() {
             return new ProjectBuilder();
         }
 
-        private Project(bool buildsSuccessfully, TestStatus testStatus) {
-            this.buildsSuccessfully = buildsSuccessfully;
-            this.testStatus = testStatus;
+        private Project(bool deploysSuccessfully, TestStatus testStatus, bool deploysSuccessfullyToStaging, TestStatus smokeTestStatus) {
+            _deploysSuccessfully = deploysSuccessfully;
+            _testStatus = testStatus;
+            _deploysSuccessfullyToStaging = deploysSuccessfullyToStaging;
+            _smokeTestStatus = smokeTestStatus;
         }
 
-        public bool hasTests() {
-            return testStatus != TestStatus.NO_TESTS;
+        public bool HasTests() {
+            return _testStatus != TestStatus.NoTests;
         }
 
-        public String runTests() {
-            return testStatus == TestStatus.PASSING_TESTS ? "success" : "failure";
+        public String RunTests() {
+            return _testStatus == TestStatus.PassingTests ? "success" : "failure";
         }
 
-        public String deploy() {
-            return buildsSuccessfully ? "success" : "failure";
+        public String Deploy() {
+            return Deploy(DeploymentEnvironment.Production);
+        }
+
+        public String Deploy(DeploymentEnvironment environment) {
+            switch (environment) {
+                case DeploymentEnvironment.Staging:
+                    return _deploysSuccessfullyToStaging ? "success" : "failure";
+                case DeploymentEnvironment.Production:
+                    return _deploysSuccessfully ? "success" : "failure";
+                default:
+                    return "failure";
+            }
+        }
+
+        public TestStatus RunSmokeTests() {
+            return _smokeTestStatus;
         }
 
         public class ProjectBuilder {
-            public bool BuildsSuccessfully { get; set; }
-            public TestStatus TestStatus { get; set; }
+            private bool _deploysSuccessfully;
+            private TestStatus _testStatus;
+            private bool _deploysSuccessfullyToStaging = false;
+            private TestStatus _smokeTestStatus = TestStatus.NoTests;
 
-            public Project build() {
-                return new Project(BuildsSuccessfully, TestStatus);
-            }
-
-            public ProjectBuilder SetTestStatus(TestStatus status)
-            {
-                this.TestStatus = status;
+            public ProjectBuilder SetTestStatus(TestStatus testStatus) {
+                _testStatus = testStatus;
                 return this;
             }
 
-            public ProjectBuilder SetDeploysSuccessfully(bool deploys)
-            {
-                this.BuildsSuccessfully = deploys;
+            public ProjectBuilder SetSmokeTestStatus(TestStatus smokeTestStatus) {
+                _smokeTestStatus = smokeTestStatus;
                 return this;
+            }
+
+            public ProjectBuilder SetDeploysSuccessfully(bool deploysSuccessfully) {
+                _deploysSuccessfully = deploysSuccessfully;
+                return this;
+            }
+
+            public ProjectBuilder SetDeploysSuccessfullyToStaging(bool deploysSuccessfully) {
+                _deploysSuccessfullyToStaging = deploysSuccessfully;
+                return this;
+            }
+
+            public Project Build() {
+                return new Project(_deploysSuccessfully, _testStatus, _deploysSuccessfullyToStaging, _smokeTestStatus);
             }
         }
     }
