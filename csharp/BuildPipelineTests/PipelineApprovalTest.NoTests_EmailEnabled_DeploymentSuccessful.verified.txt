@@ -1,0 +1,5 @@
+INFO: No tests
+INFO: Deployment successful
+INFO: Sending email
+Email message: Deployment completed successfully
+
