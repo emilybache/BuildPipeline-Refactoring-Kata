@@ -1,6 +1,6 @@
 set(TEST_NAME sample_test_catch2)
 include(FetchContent)
-set(SOURCE_FILES main.cpp sample_catch.cpp)
+set(SOURCE_FILES main.cpp sample_catch.cpp PipelineApprovalTest.cpp)
 
 # catch2
 FetchContent_Declare(
@@ -22,4 +22,5 @@ target_link_libraries(${TEST_NAME} src Catch2::Catch2 ApprovalTests::ApprovalTes
 if(MINGW)
     target_compile_options(${TEST_NAME} PRIVATE -Wno-attributes)
 endif()
-add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+add_test(NAME ApprovalTests COMMAND ${TEST_NAME} "PipelineRun")
+add_test(NAME NormalTests COMMAND ${TEST_NAME} "~PipelineRun")
